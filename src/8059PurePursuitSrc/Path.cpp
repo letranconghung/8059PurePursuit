@@ -1,30 +1,22 @@
 #include "main.h"
-#define inPerDeg 0.0372817639078584 //use baseOdom to tune?
-#define powerToDegsPerMs 0.0104 //empirical use excel
-#define powerToInPerMs (powerToDegsPerMs * inPerDeg)
-#define voltageToPower 127/12000
-#define MAXPOWV 100.0 //power
-#define MAXPOWA .5 //.5 power every ms
-#define MAXV MAXPOW*powerToInPerMs
-#define MAXA MAXPOWA*powerToInPerMs
-//INJECT
-#define SPACING .5
-//SMOOTH
-#define TOLERANCE 0.0001
-//MAXV
-#define K 20
 Path::Path(): wps{}
 {}
 Path::Path(std::vector<Node> p_wps): wps{p_wps}
 {}
-double Path::getMaxV(int i){
-  return maxV[i];
-}
 Node Path::getSmoWp(int i){
   return smoWps[i];
 }
+double Path::getMaxV(int i){
+  return maxV[i];
+}
+double Path::getTargV(int i){
+  return targV[i];
+}
 int Path::getN(){
   return n;
+}
+double Path::getLookAhead(){
+  return lookAhead;
 }
 void Path::inject(){
   injWps.clear();
@@ -53,7 +45,7 @@ void Path::smooth(){
       Node diff = smoWps[i] - aux;
       change += (fabs(diff.getX()) + fabs(diff.getY()));
     }
-    printf("change = %.5f\n", change);
+    // printf("change = %.5f\n", change);
   }
 }
 void Path::calcDist(){
@@ -74,7 +66,7 @@ void Path::calcCurvature(){
     double r = circumRad(smoWps[i-1], smoWps[i], smoWps[i+1]);
     curv.push_back(1/r);
   }
-  printVector(curv);
+  // printVector(curv);
   curv.push_back(INFsmall); //final point
 }
 void Path::calcMaxV(){
@@ -92,11 +84,12 @@ void Path::calcTargV(){
     targV[i] = std::min(maxV[i], sqrt(targV[i+1]*targV[i+1] + 2 * MAXA * d));
   }
 }
-void Path::setWps(std::vector<Node> p_wps, double p_w_data, double p_w_smooth){
+void Path::setWps(std::vector<Node> p_wps, double p_w_data, double p_w_smooth, double p_lookAhead){
   //perform injection and smooth
   wps = p_wps;
   w_data = p_w_data;
   w_smooth = p_w_smooth;
+  lookAhead = p_lookAhead;
   this->inject();
   this->smooth();
   this->calcDist();

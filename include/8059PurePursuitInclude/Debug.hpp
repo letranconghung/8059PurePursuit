@@ -11,4 +11,7 @@
  */
 #define DEBUG_MODE 0
 void printVector(std::vector<double> vd);
+void posPrintTerminal();
+void posPrintMaster();
+void encdPrintTerminal();
 #endif

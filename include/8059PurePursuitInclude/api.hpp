@@ -6,4 +6,5 @@
 #include "Debug.hpp"
 #include "Odom.hpp"
 #include "Control.hpp"
+#include "Sensors.hpp"
 #endif
