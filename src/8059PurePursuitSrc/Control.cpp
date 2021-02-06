@@ -1,5 +1,5 @@
 #include "main.h"
-#define kV 0.95*MAXPOWV
+#define kV 0.95
 #define kA 0
 #define kP 0
 Path path;
